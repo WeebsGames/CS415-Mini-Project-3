@@ -1,5 +1,5 @@
 import os
-import glob
+import glob #used to parse through the training images folder
 import numpy as np
 import cv2
 import math
@@ -130,3 +130,24 @@ cv2.imshow("Segmentation", img_seg.astype(np.uint8))
 cv2.imshow("Gaussian Mask", (gauss_mask * 255).astype(np.uint8))
 cv2.imshow("Gaussian Segmentation", img_seg_gaussian.astype(np.uint8))
 cv2.waitKey()
+
+def harris_corner(filename):
+    img = cv2.imread(filename)
+    gray = cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+    
+    gray = np.float32(gray)
+    dst = cv2.cornerHarris(gray,2,3,0.04)
+    
+    #result is dilated for marking the corners, not important
+    dst = cv2.dilate(dst,None)
+    
+    # Threshold for an optimal value, it may vary depending on the image.
+    img[dst>0.01*dst.max()]=[0,0,255]
+    
+    cv2.imshow('dst',img)
+    if cv2.waitKey(0) & 0xff == 27:
+        cv2.destroyAllWindows()
+
+
+harris_corner("checkerboard-1.png")
+harris_corner("toy-1.png")
